@@ -3,7 +3,6 @@ import hbs from 'htmlbars-inline-precompile';
 import { bool, number, string } from 'prop-types';
 
 export default Component.extend({
-
   propTypes: {
     someString: string,
     someNum: number,

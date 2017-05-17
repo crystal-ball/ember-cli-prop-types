@@ -1,7 +1,7 @@
 {
   "name": "ember-cli-prop-types",
   "version": "1.0.0",
-  "description": "PropType definitions and checking for Ember Apps using React's prop-types!",
+  "description": "PropType definitions and type checking for Ember Apps using React's prop-types!",
   "keywords": [
     "ember-addon",
     "ember",
