@@ -1,4 +1,14 @@
-![hey](./faux-go.png)
+![hey](https://github.com/healthsparq/ember-cli-prop-types/raw/master/faux-go.png)
+
+<center>
+
+[![Latest NPM release](https://img.shields.io/npm/v/ember-cli-prop-types.svg)](
+https://www.npmjs.com/package/ember-cli-prop-types])
+[![Ember Observer Score](https://emberobserver.com/badges/ember-cli-prop-types.svg)](https://emberobserver.com/addons/ember-cli-prop-types)
+[![Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types)
+[![Dev Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types/dev-status.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types?type=dev)
+
+</center>
 
 # React PropTypes for Ember CLI
 
@@ -58,6 +68,76 @@ Because this addon uses an initializer to re-open the Component class and add th
     this._super(...arguments);
     // your other code goes here
   }
+```
+
+## Excluding From Production
+
+You most likely will not want to include prop types validation in production. By default, the addon will not run the initializer that auto-runs prop type checking to components in production builds, and an `uglifyjs` config is added/invoked to automatically remove unreachable/unused code during the build, meaning your `propTypes` declaractions in your component files should be automatically stripped out.
+
+There are two mechanisms for excluding this addon from prod builds:
+
+### Via Addon Config
+
+This method is automatic. By default, `propTypes` validation will only occur for `development` builds of your application. You can add a configuration object to your app's `ember-cli-build.js` file to override this behavior:
+
+```javascript
+// ember-cli-build.js
+
+module.exports = function(defaults) {
+  var app = new EmberApp(defaults, {
+    emberCliPropTypes: {
+      // Enable prop type validation for prod builds via
+      // disabling code stripping
+      stripCode: false
+    }
+  });
+}
+```
+
+### Via Addon Blacklisting
+
+Alternatively, you can choose to blacklist the addon to remove it completely for production builds. This is accomplished in your `ember-cli-build.js` file like so:
+
+```javascript
+// ember-cli-build.js
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+
+// Create flag used to check if this is a production build
+const production = EmberApp.env() === 'production';
+
+module.exports = function(defaults) {
+  var app = new EmberApp(defaults, {
+    addons: {
+      // Set up a blacklist array contingent on the build type;
+      // Prod builds blacklist ember-cli-prop-types, others blacklist
+      // nothing. Your app may require a slightly more advanced setup
+      // to deal with blacklisting of multiple addons. 
+      blacklist: production ? ['ember-cli-prop-types'] : []
+    }
+  });
+}
+```
+
+Note that this will not automatically strip your `propTypes` declarations from your components; you will need to set up an `uglifyJS` config for your app to do this. You can use the addon's [index.js](./index.js) as a reference for accomplishing this, but the jist is simply adding config options to your `ember-cli-build.js` file:
+
+```javascript
+// ember-cli-build.js
+module.exports = function(defaults) {
+  var app = new EmberApp(defaults, {
+
+    // Set up the minifyJS options for uglify here
+    minifyJSOptions: {
+      options: {
+        // If you want to remove unreachable code, uglify must be enabled
+        enabled: true,
+        compress: {
+          // Enables stripping out of unreachable code
+          dead_code: true
+        }
+      }
+    }
+  }
+}
 ```
 
 ## Contributing

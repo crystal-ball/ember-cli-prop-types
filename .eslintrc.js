@@ -8,6 +8,10 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    DEVELOPMENT: true,
+    PRODUCTION: true
+  },
   rules: {
   }
 };
