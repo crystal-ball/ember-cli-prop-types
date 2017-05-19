@@ -82,20 +82,29 @@ module.exports = {
     // want to do it for production builds b/c it will crush the dev rebuild time
     if (emberCliPropTypesOptions.stripCode && env === 'production') {
       app.options.minifyJS = Object.assign(app.options.minifyJS, minifyJSOptions);
+
+      // When we strip the code out, we still need to deal with `import` statements
+      // that will be trying to resolve the module; this substitutes in an empty
+      // object, and the import statements won't fail for prod builds.
+      //
+      // I would love suggestions on a better way to handle this
+      // (for example, a way to strip those import statements out instead)
+      app.import(`${vendor}/bogus-prop-shim.js`, {
+        exports: {
+          PropTypes: ['default']
+        }
+      });
+    } else {
+      // Import prop-types
+      app.import(`${vendor}/prop-types/prop-types.js`);
+
+      // Super important magic
+      app.import(`${vendor}/prop-types-shim.js`, {
+        exports: {
+          PropTypes: ['default']
+        }
+      });
     }
-
-    // Import Assets and Node Moduel Shim
-    // -------------------------------------------------------------------------
-
-    // Import prop-types
-    app.import(`${vendor}/prop-types/prop-types.js`);
-
-    // Super important magic
-    app.import(`${vendor}/prop-types-shim.js`, {
-      exports: {
-        PropTypes: ['default']
-      }
-    });
 
     // Yay we did it
     return app;
