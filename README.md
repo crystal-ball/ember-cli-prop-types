@@ -1,12 +1,10 @@
 ![hey](https://github.com/healthsparq/ember-cli-prop-types/raw/master/faux-go.png)
 
-<p align="center">
 [![Latest NPM release](https://img.shields.io/npm/v/ember-cli-prop-types.svg)](
 https://www.npmjs.com/package/ember-cli-prop-types)
 [![Ember Observer Score](https://emberobserver.com/badges/ember-cli-prop-types.svg)](https://emberobserver.com/addons/ember-cli-prop-types)
 [![Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types)
 [![Dev Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types/dev-status.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types?type=dev)
-</p>
 
 # React PropTypes for Ember CLI
 
