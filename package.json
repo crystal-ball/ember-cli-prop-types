@@ -1,7 +1,7 @@
 {
   "name": "ember-cli-prop-types",
   "version": "1.1.0",
-  "description": "PropType definitions and type checking for Ember Apps using React's prop-types!",
+  "description": "Props validations for Ember applications using prop-types",
   "keywords": [
     "ember-addon",
     "ember",
@@ -10,7 +10,10 @@
     "component"
   ],
   "license": "MIT",
-  "author": "Evan Rowe <ev.rowe@gmail.com>",
+  "contributors": [
+    "Evan Rowe <ev.rowe@gmail.com>",
+    "Dan Hedgecocck <hedgecock.d@gmail.com> (http://danhedgecock.com)"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -46,6 +49,7 @@
     "ember-load-initializers": "^1.0.0",
     "ember-resolver": "^4.0.0",
     "ember-source": "~2.13.0",
+    "eslint-config-healthsparq": "^1.0.2",
     "loader.js": "^4.2.3"
   },
   "engines": {

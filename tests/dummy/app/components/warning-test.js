@@ -10,6 +10,9 @@ export default Component.extend({
   },
 
   layout: hbs`
-    <h1>Pop open the console to see prop type validation errors</h1>
+    <h1>Props Validation Demo</h1>
+    <p>The test component allows <code>someString</code> to be a string, but we are
+    passing a number to the component. Pop open the console to see the error thrown
+    as a result.</p>
   `
 });
