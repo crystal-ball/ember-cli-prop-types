@@ -1,4 +1,4 @@
-![hey](https://github.com/healthsparq/ember-cli-prop-types/raw/master/faux-go.png)
+![PropTypes Icon](https://github.com/healthsparq/ember-cli-prop-types/raw/master/icon.png)
 
 [![Latest NPM release](https://img.shields.io/npm/v/ember-cli-prop-types.svg)](
 https://www.npmjs.com/package/ember-cli-prop-types)
@@ -6,138 +6,115 @@ https://www.npmjs.com/package/ember-cli-prop-types)
 [![Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types)
 [![Dev Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types/dev-status.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types?type=dev)
 
-# React PropTypes for Ember CLI
+# Ember CLI PropTypes
 
-This addon adds support for React-style `PropTypes` validation on Ember Components. This addon utilizes [React's prop-types library](https://www.npmjs.com/package/prop-types) and can be used in your components in exactly the same way as they are in React.
+This addon makes the [prop-types](https://www.npmjs.com/package/prop-types)
+library available for React style props validation in your Ember application. The
+addon itself is very simple, it includes:
+1. AMD compatible import of `prop-types` library _(prod optimized import weight of
+  only 0.12KB gzipped)_.
+2. Ember `Component` reopen in dev builds to call `checkPropTypes`, see the
+  [component-prop-types](https://github.com/healthsparq/ember-cli-prop-types/blob/master/addon/initializers/component-prop-types.js)
+  initializer _(Component reopen stripped for production builds)_.
 
-## Usage
+Props validations and the validators themselves are all provided by the
+[prop-types](https://www.npmjs.com/package/prop-types) library.
+
+## Install
 
 ```
 ember install ember-cli-prop-types
 ```
 
-You can now import `PropTypes` into your component JS files and define a `propTypes` property to perform validation:
+## Usage
+Import `PropTypes` into your component JS files and define a `propTypes` property to
+perform validation on passed props:
 
 ```javascript
-// some-component.js
-
+// your-component.js
 import Component from 'ember-component';
 import PropTypes from 'prop-types';
 
 export default Component.extend({
   // Define prop types for your passed properties here
   propTypes: {
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
     pages: PropTypes.number,
     isLatest: PropTypes.bool
   }
 });
 ```
 
-The presence of a `propTypes` property on your component will automatically invoke validation via `PropTypes.checkPropTypes` on all of the properties you specify. Standard usage for defining your `propTypes` applies here. [See PropTypes Documentation](https://www.npmjs.com/package/prop-types) for details on defining `propTypes` for your component.
+The `prop-types` library will validate that any props passed into your component
+match the type specified in `propTypes`. See the
+[prop-types Documentation](https://www.npmjs.com/package/prop-types) for details on
+defining `propTypes` for your components.
 
-### Destructured Imports
+#### Destructured Imports
 
-Destructuring on import is also supported:
+Destructuring imports is also supported:
 
 ```javascript
 import Component from 'ember-component';
-import { array } from 'prop-types';
+import { string, number, bool } from 'prop-types';
 
 export default Component.extend({
   propTypes: {
-    photos: array
+    title: string.isRequired,
+    pages: number,
+    isLatest: bool
   }
 });
 ```
 
-## Caveats
-
-Because this addon uses an initializer to re-open the Component class and add the `propTypes` checking to the `didReceiveAttrs` hook of all components, any components you have that you want to utilize `propTypes` on that also make use of `didReceiveAttrs` will need to call `this._super(...arguments)` in their local calls to `didReceiveAttrs` to preserve the call to `PropTypes.checkPropTypes`:
+#### Using didReceiveAttrs
+This addon calls the props validation method in the `didReceiveAttrs` hook of dev
+builds. Per the Ember.js docs, if you need to define additional behavior called in
+`didReceiveAttrs` you must call `this._super(...arguments)`:
 
 ```javascript
+export default Component.extend({
   propTypes: {
     someString: PropTypes.string
   },
 
   didReceiveAttrs() {
     this._super(...arguments);
-    // your other code goes here
+    // your component code
   }
+})
 ```
 
-## Excluding From Production
+## In Production
+Although props validation is only run in development builds, this addon must be
+included for production builds as well. During production builds the `prop-types`
+library is not imported. Instead a set of shims is imported for the props validators
+so that the `import` statements do not throw errors. Prod weight for the addon is
+0.29 KB (0.12 KB gzipped).
 
-You most likely will not want to include prop types validation in production. By default, the addon will not run the initializer that auto-runs prop type checking to components in production builds, and an `uglifyjs` config is added/invoked to automatically remove unreachable/unused code during the build, meaning your `propTypes` declaractions in your component files should be automatically stripped out.
-
-There are two mechanisms for excluding this addon from prod builds:
-
-### Via Addon Config
-
-This method is automatic. By default, `propTypes` validation will only occur for `development` builds of your application. You can add a configuration object to your app's `ember-cli-build.js` file to override this behavior:
+The call to `PropTypes.checkPropTypes` is automatically stripped in production builds
+as well using UglifyJS's `compress` configurations. If you would like to disable this
+additional stripping you can configure the addon to skip it in your
+`ember-cli-build.js` configs _(Note that even if you disable the code stripping props
+validations will still only be run in dev builds).
 
 ```javascript
 // ember-cli-build.js
-
 module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
+  let app = new EmberApp(defaults, {
     emberCliPropTypes: {
-      // Enable prop type validation for prod builds via
-      // disabling code stripping
-      stripCode: false
+      compress: false
     }
   });
-}
-```
 
-### Via Addon Blacklisting
+  return app.toTree();
+};
 
-Alternatively, you can choose to blacklist the addon to remove it completely for production builds. This is accomplished in your `ember-cli-build.js` file like so:
-
-```javascript
-// ember-cli-build.js
-const EmberApp = require('ember-cli/lib/broccoli/ember-app');
-
-// Create flag used to check if this is a production build
-const production = EmberApp.env() === 'production';
-
-module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
-    addons: {
-      // Set up a blacklist array contingent on the build type;
-      // Prod builds blacklist ember-cli-prop-types, others blacklist
-      // nothing. Your app may require a slightly more advanced setup
-      // to deal with blacklisting of multiple addons. 
-      blacklist: production ? ['ember-cli-prop-types'] : []
-    }
-  });
-}
-```
-
-Note that this will not automatically strip your `propTypes` declarations from your components; you will need to set up an `uglifyJS` config for your app to do this. You can use the addon's [index.js](./index.js) as a reference for accomplishing this, but the jist is simply adding config options to your `ember-cli-build.js` file:
-
-```javascript
-// ember-cli-build.js
-module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
-
-    // Set up the minifyJS options for uglify here
-    minifyJSOptions: {
-      options: {
-        // If you want to remove unreachable code, uglify must be enabled
-        enabled: true,
-        compress: {
-          // Enables stripping out of unreachable code
-          dead_code: true
-        }
-      }
-    }
-  }
-}
 ```
 
 ## Contributing
 
-If you'd like to contribute, please read our [contribution guidelines](./.github/CONTRIBUTING.md) and then get cracking!
+If you'd like to contribute, please read our [contribution
+guidelines](./.github/CONTRIBUTING.md) and then get cracking!
 
 [Please report bugs using the issues tab.](https://github.com/healthsparq/ember-cli-prop-types/issues)

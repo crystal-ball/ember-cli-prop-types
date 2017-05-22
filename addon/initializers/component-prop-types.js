@@ -1,41 +1,29 @@
 import Component from 'ember-component';
 import { checkPropTypes } from 'prop-types';
 
-let initialize;
-
 /**
- * This initializer reopens the Component class and adds propType checking to
- * the `didReceiveAttrs` hook, utilizing the [`prop-types` npm package](https://www.npmjs.com/package/prop-types).
+ * Reopen the Component class and add props validation checking the `didReceiveAttrs`
+ * hook with `checkPropTypes` utility method exported by `prop-types`.
  */
-if (DEVELOPMENT) {
-  initialize = function initialize() {
+function initialize() {
+  // Strip out the props validation in production environments
+  if (process.env.NODE_ENV === 'development') {
     Component.reopen({
-      // Methods
-      // -------------------------------------------------------------------------
-      _checkPropTypes() {
-        const propTypes = this.get('propTypes');
-        const propKeys = typeof propTypes === 'object' ? Object.keys(propTypes) : null;
-
-        // Assuming we have both prop types and property keys to look up,
-        // check those funky prop types YEEEAAAAAAH
-        if (propTypes && propKeys && propKeys.length) {
-          // Passing `this` into checkPropTypes's `componentName` argument prints
-          // then name and instance/elementId of the offending component into the
-          // console warning
-          checkPropTypes(propTypes, this.getProperties(...propKeys), 'prop', this);
-        }
-      },
-      // Hooks
-      // -------------------------------------------------------------------------
       didReceiveAttrs() {
         this._super(...arguments);
-        // Check for existence of prop types, set up references to keys
-        this._checkPropTypes();
+
+        const propTypes = this.get('propTypes') || {};
+
+        // prop-types can handle calling `checkPropTypes` without any props, always call
+        checkPropTypes(
+          propTypes, // PropTypes definition
+          this.getProperties(...Object.keys(propTypes)), // Values to validate
+          'prop', // Type of validation that is occuring
+          this.toString() // Name of component for better debug messaging
+        );
       }
     });
-  };
-} else {
-  initialize = function initialize() {};
+  }
 }
 
 export default {

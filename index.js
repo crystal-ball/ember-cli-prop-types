@@ -1,6 +1,4 @@
-/* eslint-env node */
 'use strict';
-
 const path = require('path');
 const Funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
@@ -9,22 +7,15 @@ module.exports = {
   name: 'ember-cli-prop-types',
 
   /**
-   * Options for configuring addon. All default options should be specified here.
-   * These defaults are assigned to the consuming app's specified options in the
-   * `included` hook.
-   * @property emberCliPropTypesOptions
-   * @type {Object}
+   * By default we strip out the call to check prop types in prod builds
    */
-  emberCliPropTypesOptions: {
-    stripCode: true
+  defaultOptions: {
+    compress: true
   },
 
   /**
-   * Set correct references to consuming application by crawling tree.
-   * Call to import dependecies.
-   *
-   * Shims the prop-types npm module right into your app so you can `import`
-   * it and use it like a bawse.
+   * Import prop-types package from /vendor (See treeForVendor for package Funnel
+   * details). Configure UglifyJS for prod builds.
    * @method included
    * @param {Object} app Parent app or addon
    * @return {Object} Parent application
@@ -32,104 +23,75 @@ module.exports = {
   included(app) {
     this._super.included.apply(this, arguments);
     const vendor = this.treePaths.vendor;
+    this.env = process.env.EMBER_ENV || 'development';
 
-    // Set up Addon Configuration, Merge With App Configuration
-    // -------------------------------------------------------------------------
-
-    // Validate consuming app options objects exist
-    app.options = app.options || {};
-    app.options.emberCliPropTypes = app.options.emberCliPropTypes || {};
-    app.options.minifyJS = app.options.minifyJS || {};
-
-    // Collect addon variables and references
-    const env = process.env.EMBER_ENV || 'development';
-    // This is the config specified in consuming application's config/environment.js
-    const applicationConfig = this.project.config(env);
-    // Create Radical options using specified and default options
-    const emberCliPropTypesOptions = Object.assign(
-      this.emberCliPropTypesOptions,
-      app.options.emberCliPropTypes
-    );
-
-    const featureFlags = Object.assign(
-      {
-        DEVELOPMENT: env === 'development',
-        PRODUCTION: env === 'production',
-        TEST: env === 'test'
-      },
-      applicationConfig.featureFlags || {}
-    );
-
-    const minifyJSOptions = {
-      options: {
-        enabled: true, // If you want to remove unreachable code, uglify must be enabled
-        compress: {
-          global_defs: featureFlags,
-          dead_code: true
-        }
-      }
-    };
-
-    this.featureFlags = featureFlags;
-    this.emberCliPropTypesOptions = emberCliPropTypesOptions;
-    this.env = env;
-
-    // Update Consuming App
-    // ---------------------------------------------------------------------------
-
-    // If consumer wants to strip unreachable code, merge UglifyJS options into
-    // consuming app configuration. NOTE that even if this is enabled we ONLY
-    // want to do it for production builds b/c it will crush the dev rebuild time
-    if (emberCliPropTypesOptions.stripCode && env === 'production') {
-      app.options.minifyJS = Object.assign(app.options.minifyJS, minifyJSOptions);
-
-      // When we strip the code out, we still need to deal with `import` statements
-      // that will be trying to resolve the module; this substitutes in an empty
-      // object, and the import statements won't fail for prod builds.
-      //
-      // I would love suggestions on a better way to handle this
-      // (for example, a way to strip those import statements out instead)
-      app.import(`${vendor}/bogus-prop-shim.js`, {
-        exports: {
-          PropTypes: ['default']
-        }
-      });
-    } else {
-      // Import prop-types
-      app.import(`${vendor}/prop-types/prop-types.js`);
-
-      // Super important magic
-      app.import(`${vendor}/prop-types-shim.js`, {
-        exports: {
-          PropTypes: ['default']
-        }
-      });
+    // Find the parent app by crawling addon tree
+    while (typeof app.import !== 'function' && app.app) {
+      app = app.app;
     }
 
-    // Yay we did it
+    // In production strip out addon props validation unless configured not to
+    app.options = app.options || {};
+    app.options.emberCliPropTypes = app.options.emberCliPropTypes || {};
+    const addonOptions = Object.assign(this.defaultOptions, app.options.emberCliPropTypes.compress);
+
+    if (this.env === 'production' && addonOptions.compress) {
+      app.options.minifyJS = app.options.minifyJS || {};
+      app.options.minifyJS.options = app.options.minifyJS.options || {};
+      let minifyOpts = app.options.minifyJS.options;
+
+      minifyOpts.enabled = true; // If you want to remove unreachable code, uglify must be enabled
+      minifyOpts.compress = minifyOpts.compress || {};
+      minifyOpts.compress.dead_code = true; // Prunes dead code
+      minifyOpts.compress.global_defs = minifyOpts.compress.global_defs || {};
+      minifyOpts.compress.global_defs['process.env.NODE_ENV'] = this.env;
+    }
+
+    // Import the prop-types library only in dev builds. In prod builds import the
+    // prod shims so import statements don't throw
+    if (this.env === 'development') {
+      app.import(`${vendor}/prop-types/prop-types.js`, {
+        using: [
+          { transformation: 'amd', as: 'prop-types' }
+        ]
+      });
+    } else {
+      app.import(`${vendor}/prop-types-production-shims.js`);
+    }
+
     return app;
   },
   /**
-   * Addon treeFor[*] hook to merge prop-types into vendor tree. CLI will bundle
-   * the asset into the build from there.
+   * Package must be pulled into the /vendor directory or CLI will fail to app.import
+   * it. Use a Funnel to move package from node_modules to /vendor
    * @method treeForVendor
-   * @param {Array} vendorTree Broccoli tree of vendor file probably
-   * @return {Array} Whatever mergeTrees returns
+   * @param {Array} vendorTree Broccoli vendor tree
+   * @return {Array} Broccoli vendor tree
    */
   treeForVendor(vendorTree) {
-    const trees = [];
-    let propTypesPath = path.dirname(require.resolve('prop-types')); // waow
+    if (this.env !== 'development') { return vendorTree; }
 
-    // Pull in existing vendor tree
-    if (vendorTree) {
-      trees.push(vendorTree);
-    }
+    const tree = [];
+    if (vendorTree) { tree.push(vendorTree); }
 
-    trees.push(new Funnel(propTypesPath, {
+    // require.resolve always returns the correct path to the prop-types node_module
+    tree.push(new Funnel(path.dirname(require.resolve('prop-types')), {
       destDir: 'prop-types',
       include: [new RegExp(/\.js$/)]
     }));
 
-    return mergeTrees(trees);
+    return mergeTrees(tree);
+  },
+  /**
+   * In non-production builds the global `process` is not defined by UglifyJS, prevent
+   * this from throwing an error by attaching it as a global to the window.
+   * @method contentFor
+   * @param {string} type The outlet for the injected content
+   * @returns {string} Content to inject into the outlet
+   */
+  contentFor(type) {
+    if (this.env === 'development' && type === 'head') {
+      return '<script>window.process = { env: { NODE_ENV: "development" } };</script>';
+    }
   }
 };
