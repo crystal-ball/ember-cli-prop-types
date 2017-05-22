@@ -12,7 +12,7 @@
   "license": "MIT",
   "contributors": [
     "Evan Rowe <ev.rowe@gmail.com>",
-    "Dan Hedgecocck <hedgecock.d@gmail.com> (http://danhedgecock.com)"
+    "Dan Hedgecock <hedgecock.d@gmail.com> (http://danhedgecock.com)"
   ],
   "directories": {
     "doc": "doc",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "ember-cli-babel": "^6.0.0",
-    "prop-types": "^15.5.10"
+    "prop-types": "15.5.10"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",

@@ -6,13 +6,16 @@ const mergeTrees = require('broccoli-merge-trees');
 module.exports = {
   name: 'ember-cli-prop-types',
 
+  /**
+   * By default we strip out the call to check prop types in prod builds
+   */
   defaultOptions: {
     compress: true
   },
 
   /**
-   * Import prop-types package from /vendor. See treeForVendor for package Funnel
-   * details.
+   * Import prop-types package from /vendor (See treeForVendor for package Funnel
+   * details). Configure UglifyJS for prod builds.
    * @method included
    * @param {Object} app Parent app or addon
    * @return {Object} Parent application
@@ -27,32 +30,34 @@ module.exports = {
       app = app.app;
     }
 
+    // In production strip out addon props validation unless configured not to
     app.options = app.options || {};
     app.options.emberCliPropTypes = app.options.emberCliPropTypes || {};
-    const options = Object.assign(this.defaultOptions, app.options.emberCliPropTypes);
+    const addonOptions = Object.assign(this.defaultOptions, app.options.emberCliPropTypes.compress);
 
-    // In production strip out addon props validation unless configured not to
-    if (this.env === 'production' && options.compress) {
-      app.options.minifyJS = Object.assign(app.options.minifyJS, {
-        options: {
-          enabled: true, // If you want to remove unreachable code, uglify must be enabled
-          compress: {
-            dead_code: true,
-            global_defs: {
-              'process.env.NODE_ENV': this.env
-            }
-          }
-        }
-      });
+    if (this.env === 'production' && addonOptions.compress) {
+      app.options.minifyJS = app.options.minifyJS || {};
+      app.options.minifyJS.options = app.options.minifyJS.options || {};
+      let minifyOpts = app.options.minifyJS.options;
+
+      minifyOpts.enabled = true; // If you want to remove unreachable code, uglify must be enabled
+      minifyOpts.compress = minifyOpts.compress || {};
+      minifyOpts.compress.dead_code = true; // Prunes dead code
+      minifyOpts.compress.global_defs = minifyOpts.compress.global_defs || {};
+      minifyOpts.compress.global_defs['process.env.NODE_ENV'] = this.env;
     }
 
-    // prop-types has a stripped down production build that is only 3kb and doesn't
-    // perform actual validations, import .min in prod builds
-    app.import(`${vendor}/prop-types/prop-types${this.env === 'production' ? '.min' : ''}.js`, {
+    // Import the prop-types library only in dev builds. In prod builds import the
+    // prod shims so import statements don't throw
+    if (this.env === 'development') {
+      app.import(`${vendor}/prop-types/prop-types.js`, {
         using: [
           { transformation: 'amd', as: 'prop-types' }
         ]
       });
+    } else {
+      app.import(`${vendor}/prop-types-production-shims.js`);
+    }
 
     return app;
   },
@@ -64,6 +69,8 @@ module.exports = {
    * @return {Array} Broccoli vendor tree
    */
   treeForVendor(vendorTree) {
+    if (this.env !== 'development') { return vendorTree; }
+
     const tree = [];
     if (vendorTree) { tree.push(vendorTree); }
 

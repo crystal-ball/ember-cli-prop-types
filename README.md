@@ -8,15 +8,17 @@ https://www.npmjs.com/package/ember-cli-prop-types)
 
 # Ember CLI PropTypes
 
-This addon shims the [prop-types](https://www.npmjs.com/package/prop-types)
-library for React style props validation in your Ember application. The addon itself
-is very simple, it includes:
-- AMD compatible import of `prop-types` library, with prod import weight of only
-  08.KB gzipped.
-- Ember `Component` reopen in dev builds to call `checkPropTypes`, _(see the
+This addon makes the [prop-types](https://www.npmjs.com/package/prop-types)
+library available for React style props validation in your Ember application. The
+addon itself is very simple, it includes:
+1. AMD compatible import of `prop-types` library _(prod optimized import weight of
+  only 0.12KB gzipped)_.
+2. Ember `Component` reopen in dev builds to call `checkPropTypes`, see the
   [component-prop-types](https://github.com/healthsparq/ember-cli-prop-types/blob/master/addon/initializers/component-prop-types.js)
-  initializer)_.
-- Stripping of Component reopen call for production builds.
+  initializer _(Component reopen stripped for production builds)_.
+
+Props validations and the validators themselves are all provided by the
+[prop-types](https://www.npmjs.com/package/prop-types) library.
 
 ## Install
 
@@ -84,12 +86,17 @@ export default Component.extend({
 ```
 
 ## In Production
-Props validation is only run in development builds. During production builds a
-stripped version of the library is imported. File size is 2.2KB (0.8KB gzipped).
+Although props validation is only run in development builds, this addon must be
+included for production builds as well. During production builds the `prop-types`
+library is not imported. Instead a set of shims is imported for the props validators
+so that the `import` statements do not throw errors. Prod weight for the addon is
+0.29 KB (0.12 KB gzipped).
 
 The call to `PropTypes.checkPropTypes` is automatically stripped in production builds
-as well using UglifyJS's `compress` configurations. If you would like to disable
-this additional stripping you can configure the addon to skip it in you `ember-cli-build.js` configs:
+as well using UglifyJS's `compress` configurations. If you would like to disable this
+additional stripping you can configure the addon to skip it in your
+`ember-cli-build.js` configs _(Note that even if you disable the code stripping props
+validations will still only be run in dev builds).
 
 ```javascript
 // ember-cli-build.js
