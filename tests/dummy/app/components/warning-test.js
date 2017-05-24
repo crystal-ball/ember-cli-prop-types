@@ -5,7 +5,7 @@ import { bool, number, string } from 'prop-types';
 export default Component.extend({
   propTypes: {
     someString: string,
-    someNumber: number,
+    someNumber: number.isRequired,
     someBool: bool
   },
 
