@@ -3,7 +3,7 @@
 Hi there! Thanks for your interest in contributing to `ember-cli-prop-types`!
 
 Before implementing new features and changes, please [submit a new
-issue](https://github.com/healthsparq/ember-cli-prop-types/issues/new). We'd love to
+issue](https://github.com/crystal-ball/ember-cli-prop-types/issues/new). We'd love to
 discuss proposed changes before getting started, and also make sure we aren't already
 working on the issue you have!
 
@@ -32,7 +32,7 @@ For more information on using ember-cli, visit [http://ember-cli.com/](http://em
 
 ## Submitting Pull Requests
 
-1. Fork [this repository](https://github.com/healthsparq/ember-cli-prop-types/)
+1. Fork [this repository](https://github.com/crystal-ball/ember-cli-prop-types/)
 2. Create a new branch with your feature name (e.g. `add-additional-feature`)
 3. Make your changes
 4. If you added new features, write tests for them

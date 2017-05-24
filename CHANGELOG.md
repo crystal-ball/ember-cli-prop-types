@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 Grid Weaver
+
+- ✨ Adds `getDefaultProps` functionality
+
 ## 1.2.0 Digital Cyber Scorpion Venom
 
 - 🔨 Updates and improves the prod code-stripping mechanism

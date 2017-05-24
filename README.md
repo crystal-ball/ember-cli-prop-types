@@ -1,10 +1,10 @@
-![PropTypes Icon](https://github.com/healthsparq/ember-cli-prop-types/raw/master/icon.png)
+![PropTypes Icon](https://github.com/crystal-ball/ember-cli-prop-types/raw/master/icon.png)
 
 [![Latest NPM release](https://img.shields.io/npm/v/ember-cli-prop-types.svg)](
 https://www.npmjs.com/package/ember-cli-prop-types)
 [![Ember Observer Score](https://emberobserver.com/badges/ember-cli-prop-types.svg)](https://emberobserver.com/addons/ember-cli-prop-types)
-[![Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types)
-[![Dev Dependencies](https://david-dm.org/healthsparq/ember-cli-prop-types/dev-status.svg)](https://david-dm.org/healthsparq/ember-cli-prop-types?type=dev)
+[![Dependencies](https://david-dm.org/crystal-ball/ember-cli-prop-types.svg)](https://david-dm.org/crystal-ball/ember-cli-prop-types)
+[![Dev Dependencies](https://david-dm.org/crystal-ball/ember-cli-prop-types/dev-status.svg)](https://david-dm.org/crystal-ball/ember-cli-prop-types?type=dev)
 
 # Ember CLI PropTypes
 
@@ -14,7 +14,7 @@ addon itself is very simple, it includes:
 1. AMD compatible import of `prop-types` library _(prod optimized import weight of
   only 0.12KB gzipped)_.
 2. Ember `Component` reopen in dev builds to call `checkPropTypes`, see the
-  [component-prop-types](https://github.com/healthsparq/ember-cli-prop-types/blob/master/addon/initializers/component-prop-types.js)
+  [component-prop-types](https://github.com/crystal-ball/ember-cli-prop-types/blob/master/addon/initializers/component-prop-types.js)
   initializer _(Component reopen stripped for production builds)_.
 
 Props validations and the validators themselves are all provided by the
@@ -161,4 +161,4 @@ module.exports = function(defaults) {
 If you'd like to contribute, please read our [contribution
 guidelines](./.github/CONTRIBUTING.md) and then get cracking!
 
-[Please report bugs using the issues tab.](https://github.com/healthsparq/ember-cli-prop-types/issues)
+[Please report bugs using the issues tab.](https://github.com/crystal-ball/ember-cli-prop-types/issues)
