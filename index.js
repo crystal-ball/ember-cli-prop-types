@@ -9,8 +9,9 @@ module.exports = {
   /**
    * By default we strip out the call to check prop types in prod builds
    */
-  defaultOptions: {
-    compress: true
+  addonOptions: {
+    compress: true,
+    getDefaultProps: true
   },
 
   /**
@@ -30,11 +31,14 @@ module.exports = {
       app = app.app;
     }
 
-    // In production strip out addon props validation unless configured not to
+    // Check for configurations specified by consuming app and fall back to addon
+    // defaults using Object.assign
     app.options = app.options || {};
     app.options.emberCliPropTypes = app.options.emberCliPropTypes || {};
-    const addonOptions = Object.assign(this.defaultOptions, app.options.emberCliPropTypes.compress);
+    let addonOptions = Object.assign(this.addonOptions, app.options.emberCliPropTypes)
+    this.addonOptions = addonOptions;
 
+    // In production strip out features that are disabled
     if (this.env === 'production' && addonOptions.compress) {
       app.options.minifyJS = app.options.minifyJS || {};
       app.options.minifyJS.options = app.options.minifyJS.options || {};
@@ -45,6 +49,7 @@ module.exports = {
       minifyOpts.compress.dead_code = true; // Prunes dead code
       minifyOpts.compress.global_defs = minifyOpts.compress.global_defs || {};
       minifyOpts.compress.global_defs['process.env.NODE_ENV'] = this.env;
+      minifyOpts.compress.global_defs['process.env.INCLUDE_GET_DEFAULT_PROPS'] = addonOptions.getDefaultProps;
     }
 
     // Import the prop-types library only in dev builds. In prod builds import the
@@ -83,15 +88,19 @@ module.exports = {
     return mergeTrees(tree);
   },
   /**
-   * In non-production builds the global `process` is not defined by UglifyJS, prevent
-   * this from throwing an error by attaching it as a global to the window.
+   * In non-production builds (or always if code stripping has been disabled) the
+   * global `process` is not defined by UglifyJS, prevent this from throwing an error
+   * by attaching it as a global to the window.
    * @method contentFor
    * @param {string} type The outlet for the injected content
    * @returns {string} Content to inject into the outlet
    */
   contentFor(type) {
-    if (this.env === 'development' && type === 'head') {
-      return '<script>window.process = { env: { NODE_ENV: "development" } };</script>';
+    if (
+      (this.env === 'development' || this.addonOptions.compress === false)
+      && type === 'head'
+    ) {
+      return `<script>window.process = { env: { NODE_ENV: "development", INCLUDE_GET_DEFAULT_PROPS: ${this.addonOptions.getDefaultProps} } };</script>`;
     }
   }
 };

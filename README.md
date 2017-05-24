@@ -26,7 +26,7 @@ Props validations and the validators themselves are all provided by the
 ember install ember-cli-prop-types
 ```
 
-## Usage
+## Props Validation
 Import `PropTypes` into your component JS files and define a `propTypes` property to
 perform validation on passed props:
 
@@ -67,17 +67,56 @@ export default Component.extend({
 });
 ```
 
-#### Using didReceiveAttrs
-This addon calls the props validation method in the `didReceiveAttrs` hook of dev
-builds. Per the Ember.js docs, if you need to define additional behavior called in
-`didReceiveAttrs` you must call `this._super(...arguments)`:
+## Props Default Values
+This addon adds the ability to set a default value for passed props through a `getDefaultProps`
+method. This method should return an object with the default props values:
+
+```javascript
+import Component from 'ember-component';
+import { string, number, bool } from 'prop-types';
+
+export default Component.extend({
+  propTypes: {
+    title: string.isRequired,
+    pages: number,
+    isLatest: bool
+  },
+  getDefaultProps() {
+    return {
+      title: 'Ambitious Props',
+      pages: 1,
+      isLatest: false
+    };
+  }
+});
+```
+
+During component initialization, if a prop with a configured default is `undefined`,
+it will be set to the returned default value. This can be especially helpful when
+working with dynamic values or the component helper.
+
+The `getDefaultProps` method is run during production builds.
+
+## Lifecycle Hook Super Calls
+This addon calls props validation and default value assignments in the `didReceiveAttrs`
+and `init` lifecycle hooks. Per the Ember.js docs, if you need to define additional behavior in
+these hooks you must call `this._super(...arguments)`:
 
 ```javascript
 export default Component.extend({
   propTypes: {
     someString: PropTypes.string
   },
+  getDefaultProps() {
+    return {
+      someString: 'Default Value'
+    }
+  },
 
+  init() {
+    this._super(...arguments);
+    // your component code
+  },
   didReceiveAttrs() {
     this._super(...arguments);
     // your component code
@@ -96,14 +135,19 @@ The call to `PropTypes.checkPropTypes` is automatically stripped in production b
 as well using UglifyJS's `compress` configurations. If you would like to disable this
 additional stripping you can configure the addon to skip it in your
 `ember-cli-build.js` configs _(Note that even if you disable the code stripping props
-validations will still only be run in dev builds).
+validations will still only be run in dev builds)_.
+
+The `getDefaultProps` method is run during component `init` in production builds. If
+you would prefer not to enable this method, you can configure the addon to strip it
+out:
 
 ```javascript
 // ember-cli-build.js
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
     emberCliPropTypes: {
-      compress: false
+      compress: false, // Setting to false will disable code stripping
+      getDefaultProps: false // Setting to false will strip `getDefaultProps` feature
     }
   });
 
