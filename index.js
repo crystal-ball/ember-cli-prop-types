@@ -48,8 +48,8 @@ module.exports = {
       minifyOpts.compress = minifyOpts.compress || {};
       minifyOpts.compress.dead_code = true; // Prunes dead code
       minifyOpts.compress.global_defs = minifyOpts.compress.global_defs || {};
-      minifyOpts.compress.global_defs['process.env.NODE_ENV'] = this.env;
-      minifyOpts.compress.global_defs['process.env.INCLUDE_GET_DEFAULT_PROPS'] = addonOptions.getDefaultProps;
+      minifyOpts.compress.global_defs.NODE_ENV = this.env;
+      minifyOpts.compress.global_defs.INCLUDE_GET_DEFAULT_PROPS = addonOptions.getDefaultProps;
     }
 
     // Import the prop-types library only in dev builds. In prod builds import the
@@ -100,7 +100,7 @@ module.exports = {
       (this.env === 'development' || this.addonOptions.compress === false)
       && type === 'head'
     ) {
-      return `<script>window.process = { env: { NODE_ENV: "development", INCLUDE_GET_DEFAULT_PROPS: ${this.addonOptions.getDefaultProps} } };</script>`;
+      return `<script>window.NODE_ENV = "development"; window.INCLUDE_GET_DEFAULT_PROPS = ${this.addonOptions.getDefaultProps};</script>`;
     }
   }
 };

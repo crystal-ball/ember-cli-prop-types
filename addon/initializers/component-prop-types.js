@@ -2,7 +2,7 @@ import Component from 'ember-component';
 import { checkPropTypes } from 'prop-types';
 
 /**
- * Initializer is optimized for production using injected process.env variables.
+ * Initializer is optimized for production using injected variables.
  * These are either added to the window as globals during dev builds or injected into
  * the build using UglifyJS during production builds.
  */
@@ -12,7 +12,7 @@ function initialize() {
   // Props validation included in dev only
   // Add props validation checking during `didReceiveAttrs` hook with
   // `checkPropTypes` utility method
-  if (process.env.NODE_ENV === 'development') {
+  if (NODE_ENV === 'development') {
     propTypesExtends.didReceiveAttrs = function() {
       this._super(...arguments);
 
@@ -31,7 +31,7 @@ function initialize() {
   // Default Props included by default, can be configured off
   // Sets a default value for props during component initialization if undefined or
   // null
-  if (process.env.INCLUDE_GET_DEFAULT_PROPS) {
+  if (INCLUDE_GET_DEFAULT_PROPS) {
     propTypesExtends.init = function() {
       this._super(...arguments);
       // If default props are not configured, we're done
@@ -48,7 +48,7 @@ function initialize() {
   }
 
   // Only reopen Component class if adding props validation or getDefaultProps method
-  if (process.env.NODE_ENV === 'development' || process.env.INCLUDE_GET_DEFAULT_PROPS) {
+  if (NODE_ENV === 'development' || INCLUDE_GET_DEFAULT_PROPS) {
     Component.reopen(propTypesExtends);
   }
 }
