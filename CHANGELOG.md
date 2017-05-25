@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 Revenge of the Laser Raptor
+
+- 🐛 Fixes issue where modules may not load properly if process is added to window
+
 ## 1.3.0 Grid Weaver
 
 - ✨ Adds `getDefaultProps` functionality
