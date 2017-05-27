@@ -3,14 +3,15 @@ import Extended from '../models/extended';
 import Ember from 'ember';
 import DS from 'ember-data';
 import hbs from 'htmlbars-inline-precompile';
-import { instanceOf } from 'prop-types';
+import { instanceOf, emberArray } from 'prop-types';
 const { PromiseArray } = DS;
 
 export default Component.extend({
 
   propTypes: {
     emberObject: instanceOf(Extended),
-    emberArray: instanceOf(Ember.A),
+    emberArray: emberArray.isRequired,
+    emberArrayNotRequired: emberArray,
     promiseArray: instanceOf(PromiseArray)
   },
 

@@ -1,5 +1,7 @@
 import Component from 'ember-component';
-import { checkPropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
+import emberArray from '../custom-props/ember-array';
+const { checkPropTypes } = PropTypes;
 
 /**
  * Initializer is optimized for production using injected variables.
@@ -8,6 +10,9 @@ import { checkPropTypes } from 'prop-types';
  */
 function initialize() {
   let propTypesExtends = {};
+
+  // Adding `PropTypes.emberArray` for verifying Ember.A instances.
+  PropTypes.emberArray = emberArray;
 
   // Props validation included in dev only
   // Add props validation checking during `didReceiveAttrs` hook with
