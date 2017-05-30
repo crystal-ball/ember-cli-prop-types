@@ -1,6 +1,6 @@
 import Component from 'ember-component';
 import PropTypes from 'prop-types';
-import emberArray from '../custom-props/ember-array';
+import CustomProps from '../custom-props';
 const { checkPropTypes } = PropTypes;
 
 /**
@@ -11,8 +11,8 @@ const { checkPropTypes } = PropTypes;
 function initialize() {
   let propTypesExtends = {};
 
-  // Adding `PropTypes.emberArray` for verifying Ember.A instances.
-  PropTypes.emberArray = emberArray;
+  // Add our Custom Properties
+  CustomProps.addCustomProps();
 
   // Props validation included in dev only
   // Add props validation checking during `didReceiveAttrs` hook with
