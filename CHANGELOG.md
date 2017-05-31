@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2 Pyramids Streams in 24-bit Color
+
+- 🐛 Fixes issue with unrecognized environment variables
+
 ## 1.3.1 Revenge of the Laser Raptor
 
 - 🐛 Fixes issue where modules may not load properly if process is added to window
