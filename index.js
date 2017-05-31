@@ -54,7 +54,7 @@ module.exports = {
 
     // Import the prop-types library only in dev builds. In prod builds import the
     // prod shims so import statements don't throw
-    if (this.env === 'development') {
+    if (this.env !== 'production') {
       app.import(`${vendor}/prop-types/prop-types.js`, {
         using: [
           { transformation: 'amd', as: 'prop-types' }
@@ -97,7 +97,7 @@ module.exports = {
    */
   contentFor(type) {
     if (
-      (this.env === 'development' || this.addonOptions.compress === false)
+      (this.env !== 'production' || this.addonOptions.compress === false)
       && type === 'head'
     ) {
       return `<script>window.NODE_ENV = "development"; window.INCLUDE_GET_DEFAULT_PROPS = ${this.addonOptions.getDefaultProps};</script>`;
