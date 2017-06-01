@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3 Distress Signal from Sector Q
+
+- 🐛 Ensures any non-prod environment still imports the prop-types lib
+
 ## 1.3.2 Pyramids Streams in 24-bit Color
 
 - 🐛 Fixes issue with unrecognized environment variables
