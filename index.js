@@ -74,7 +74,7 @@ module.exports = {
    * @return {Array} Broccoli vendor tree
    */
   treeForVendor(vendorTree) {
-    if (this.env !== 'development') { return vendorTree; }
+    if (this.env === 'production') { return vendorTree; }
 
     const tree = [];
     if (vendorTree) { tree.push(vendorTree); }
