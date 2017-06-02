@@ -4,6 +4,7 @@
 
 // Update process:
 // Use the prop-types library shims: https://github.com/facebook/prop-types/blob/master/factoryWithThrowingShims.js
+// Be sure to include any custom prop types from this lib's `ember-custom-props.js`
 // Copy shims into rollup as an ES6 module and bundle to an AMD named module of prop-types
 
 // IMPORTANT!
@@ -35,7 +36,10 @@ define('prop-types', function () { 'use strict';
     objectOf: getShim,
     oneOf: getShim,
     oneOfType: getShim,
-    shape: getShim
+    shape: getShim,
+
+    // `ember-custom-props.js` props.
+    emberArray: shim
   };
 
   ReactPropTypes.checkPropTypes = function() {};

@@ -1,5 +1,6 @@
 import Component from 'ember-component';
-import { checkPropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
+const { checkPropTypes } = PropTypes;
 
 /**
  * Initializer is optimized for production using injected variables.
