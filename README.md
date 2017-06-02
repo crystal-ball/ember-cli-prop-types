@@ -49,19 +49,49 @@ match the type specified in `propTypes`. See the
 [prop-types Documentation](https://www.npmjs.com/package/prop-types) for details on
 defining `propTypes` for your components.
 
-#### Destructured Imports
+### Validating Ember-Specific Classes/Concepts
+
+You can validate the majority of Ember classes or other Ember-specific concepts
+via the `instanceOf` type checker. We have added specific support for `Ember.Array`
+and will continue to add support for Ember classes that cannot be validated using
+the library as-is.
+
+```javascript
+import Component from 'ember-component';
+import EmberObject from 'ember-object';
+import DS from 'ember-data';
+import PropTypes from 'prop-types';
+const { PromiseArray } = DS;
+
+export default Component.extend({
+  propTypes: {
+    post: PropTypes.instanceOf(EmberObject),
+    relatedPosts: PropTypes.instanceOf(PromiseArray),
+    authors: PropTypes.emberArray.isRequired,
+    comments: PropTypes.emberArray,
+    leaveCommentClosureAction: PropTypes.func
+  }
+});
+```
+
+#### Ember-Specific Checkers:
+
+- `PropTypes.emberArray`
+
+### Destructured Imports
 
 Destructuring imports is also supported:
 
 ```javascript
 import Component from 'ember-component';
-import { string, number, bool } from 'prop-types';
+import { string, number, bool, func } from 'prop-types';
 
 export default Component.extend({
   propTypes: {
     title: string.isRequired,
     pages: number,
-    isLatest: bool
+    isLatest: bool,
+    someAction: func
   }
 });
 ```
