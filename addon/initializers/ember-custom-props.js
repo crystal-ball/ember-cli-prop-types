@@ -30,9 +30,17 @@ let emberArray = createChainableTypeChecker(function(props, propName, componentN
   }
 });
 
-export default {
-  addCustomProps: () => {
-    // Adding `PropTypes.emberArray` for verifying Ember.A/Array instances.
+/**
+ * Initializer appends the ember-cli-prop-types' custom props to the `PropTypes`
+ * main object so they're usable in end applicaitons. This is only run in development env.
+ */
+function initialize() {
+  if (NODE_ENV === 'development') {
     PropTypes.emberArray = emberArray;
   }
+}
+
+export default {
+  name: 'ember-custom-props',
+  initialize
 };
