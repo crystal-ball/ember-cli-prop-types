@@ -1,6 +1,5 @@
 import Component from 'ember-component';
 import Extended from '../models/extended';
-import Ember from 'ember';
 import DS from 'ember-data';
 import hbs from 'htmlbars-inline-precompile';
 import { instanceOf, emberArray } from 'prop-types';
@@ -16,8 +15,27 @@ export default Component.extend({
   },
 
   layout: hbs`
-    <p>{{emberObject}}</p>
-    <p>{{emberArray}}</p>
-    <p>{{promiseArray}}</p>
+    <h3>Support for Native Ember Classes</h3>
+    <p>Ember Object {{emberObject}}:
+      <ul>
+        {{#each-in emberObject as |key value|}}
+          <li>{{key}}: {{value}}</li>
+        {{/each-in}}
+      </ul>
+    </p>
+    <p>Ember.Array ({{emberArray}}):
+      <ul>
+        {{#each emberArray as |item|}}
+          <li>{{item}}</li>
+        {{/each}}
+      </ul>
+    </p>
+    <p>PromiseArray {{promiseArray}}:
+      <ul>
+        {{#each promiseArray as |item|}}
+          <li>{{item}}</li>
+        {{/each}}
+      </ul>
+    </p>
   `
 });

@@ -35,7 +35,7 @@ let emberArray = createChainableTypeChecker(function(props, propName, componentN
  * main object so they're usable in end applicaitons. This is only run in development env.
  */
 function initialize() {
-  if (NODE_ENV === 'development') {
+  if (NODE_ENV !== 'production') {
     PropTypes.emberArray = emberArray;
   }
 }

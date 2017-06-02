@@ -13,7 +13,7 @@ function initialize() {
   // Props validation included in dev only
   // Add props validation checking during `didReceiveAttrs` hook with
   // `checkPropTypes` utility method
-  if (NODE_ENV === 'development') {
+  if (NODE_ENV !== 'production') {
     propTypesExtends.didReceiveAttrs = function() {
       this._super(...arguments);
 
@@ -49,7 +49,7 @@ function initialize() {
   }
 
   // Only reopen Component class if adding props validation or getDefaultProps method
-  if (NODE_ENV === 'development' || INCLUDE_GET_DEFAULT_PROPS) {
+  if (NODE_ENV !== 'production' || INCLUDE_GET_DEFAULT_PROPS) {
     Component.reopen(propTypesExtends);
   }
 }

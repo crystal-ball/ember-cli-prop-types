@@ -13,7 +13,7 @@ export default Route.extend({
       })
     });
     return {
-      object: Extended.create(),
+      object: Extended.create({foo: 'bar', isEmberObject: 'yup'}),
       array: Ember.A([1, 2, 3]),
       promiseArray: promiseArray
      };
