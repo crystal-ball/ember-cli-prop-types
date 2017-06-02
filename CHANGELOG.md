@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 Stellar Spider Web
+
+- ✨ Adds a custom `emberArray` type checking method to `PropTypes` [#6]
+- 📝 Updates docs with info/guidance on validating Ember classes
+- 🐛 Ensures initializer code follows the same pattern as CLI import code
+
 ## 1.3.3 Distress Signal from Sector Q
 
 - 🐛 Ensures any non-prod environment still imports the prop-types lib
