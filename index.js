@@ -13,7 +13,27 @@ module.exports = {
     compress: true,
     getDefaultProps: true
   },
+  /**
+   * Attach babel config options before the addon tree is transpiled. Use
+   * babel plugin to replace inline variables to determine whether or not to
+   * check prop types in development/production and support the getDefaultProps
+   * function.
+   * @param {String} type Type of tree
+   * @param {Tree} tree Tree to process
+   * @return {[type]}
+   */
+  preprocessTree(type, tree) {
+    this.options.babel = {
+      plugins: [
+        ['inline-replace-variables', {
+          "NODE_ENV": this.env,
+          "INCLUDE_GET_DEFAULT_PROPS": this.addonOptions.getDefaultProps
+        }]
+      ]
+    };
 
+    return tree;
+  },
   /**
    * Import prop-types package from /vendor (See treeForVendor for package Funnel
    * details). Configure UglifyJS for prod builds.
@@ -86,21 +106,5 @@ module.exports = {
     }));
 
     return mergeTrees(tree);
-  },
-  /**
-   * In non-production builds (or always if code stripping has been disabled) the
-   * global `process` is not defined by UglifyJS, prevent this from throwing an error
-   * by attaching it as a global to the window.
-   * @method contentFor
-   * @param {string} type The outlet for the injected content
-   * @returns {string} Content to inject into the outlet
-   */
-  contentFor(type) {
-    if (
-      (this.env !== 'production' || this.addonOptions.compress === false)
-      && type === 'head'
-    ) {
-      return `<script>window.NODE_ENV = "development"; window.INCLUDE_GET_DEFAULT_PROPS = ${this.addonOptions.getDefaultProps};</script>`;
-    }
   }
 };
