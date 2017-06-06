@@ -20,7 +20,7 @@ module.exports = {
    * function.
    * @param {String} type Type of tree
    * @param {Tree} tree Tree to process
-   * @return {[type]}
+   * @return {Tree} Processed tree
    */
   preprocessTree(type, tree) {
     this.options.babel = {
