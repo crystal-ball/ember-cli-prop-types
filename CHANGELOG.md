@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0 Freerider
+
+- 🔨 Improve inline replacement of global variables for addon options and
+  environment variables.
+
 ## 1.4.0 Stellar Spider Web
 
 - ✨ Adds a custom `emberArray` type checking method to `PropTypes` [#6]
