@@ -12,9 +12,11 @@ library available for React style props validation in your Ember application. Th
 addon itself is very simple, it includes:
 1. AMD compatible import of `prop-types` library _(prod optimized import weight of
   only 0.12KB gzipped)_.
-2. Ember `Component` reopen in dev builds to call `checkPropTypes`, see the
+2. Props validation called in dev builds with `checkPropTypes`, see the
   [component-prop-types](https://github.com/crystal-ball/ember-cli-prop-types/blob/master/addon/initializers/component-prop-types.js)
   initializer _(Component reopen stripped for production builds)_.
+3. Optional Component extension to include `getDefaultProps` method for specifying
+  default values for undefined passed props.
 
 Props validations and the validators themselves are all provided by the
 [prop-types](https://www.npmjs.com/package/prop-types) library.
@@ -49,6 +51,8 @@ match the type specified in `propTypes`. See the
 [prop-types Documentation](https://www.npmjs.com/package/prop-types) for details on
 defining `propTypes` for your components.
 
+Note that these validations are only run in dev environments.
+
 ### Validating Ember-Specific Classes/Concepts
 
 You can validate the majority of Ember classes or other Ember-specific concepts
@@ -74,7 +78,7 @@ export default Component.extend({
 });
 ```
 
-#### Ember-Specific Checkers:
+#### Ember-Specific Validators:
 
 - `PropTypes.emberArray`
 
@@ -97,8 +101,9 @@ export default Component.extend({
 ```
 
 ## Props Default Values
-This addon adds the ability to set a default value for passed props through a `getDefaultProps`
-method. This method should return an object with the default props values:
+This addon adds the ability to set a default value for passed props through a
+`getDefaultProps` method. This method should return an object with the default props
+values:
 
 ```javascript
 import Component from 'ember-component';
@@ -124,12 +129,12 @@ During component initialization, if a prop with a configured default is `undefin
 it will be set to the returned default value. This can be especially helpful when
 working with dynamic values or the component helper.
 
-The `getDefaultProps` method is run during production builds.
+Note that the `getDefaultProps` method is run during production builds.
 
 ## Lifecycle Hook Super Calls
-This addon calls props validation and default value assignments in the `didReceiveAttrs`
-and `init` lifecycle hooks. Per the Ember.js docs, if you need to define additional behavior in
-these hooks you must call `this._super(...arguments)`:
+This addon calls props validation and default value assignments in the
+`didReceiveAttrs` and `init` lifecycle hooks. Per the Ember.js docs, if you need to
+define additional behavior in these hooks you must call `this._super(...arguments)`:
 
 ```javascript
 export default Component.extend({
@@ -154,19 +159,12 @@ export default Component.extend({
 ```
 
 ## In Production
-Although props validation is only run in development builds, this addon must be
-included for production builds as well. During production builds the `prop-types`
-library is not imported. Instead a set of shims is imported for the props validators
-so that the `import` statements do not throw errors. Prod weight for the addon is
+The props validations are only run in development builds. In production builds a set
+of no-op functions are imported instead of the `prop-types` library and the call to
+`PropTypes.checkPropTypes` is stripped. The production weight for the addon is
 0.29 KB (0.12 KB gzipped).
 
-The call to `PropTypes.checkPropTypes` is automatically stripped in production builds
-as well using UglifyJS's `compress` configurations. If you would like to disable this
-additional stripping you can configure the addon to skip it in your
-`ember-cli-build.js` configs _(Note that even if you disable the code stripping props
-validations will still only be run in dev builds)_.
-
-The `getDefaultProps` method is run during component `init` in production builds. If
+The `getDefaultProps` method is included and run by default in production builds. If
 you would prefer not to enable this method, you can configure the addon to strip it
 out:
 
@@ -175,7 +173,6 @@ out:
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
     emberCliPropTypes: {
-      compress: false, // Setting to false will disable code stripping
       getDefaultProps: false // Setting to false will strip `getDefaultProps` feature
     }
   });
