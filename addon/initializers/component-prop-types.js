@@ -7,7 +7,7 @@ const { checkPropTypes } = PropTypes;
  * These are either added to the window as globals during dev builds or injected into
  * the build using UglifyJS during production builds.
  */
-function initialize() {
+export function initialize() {
   let propTypesExtends = {};
 
   // Props validation included in dev only
