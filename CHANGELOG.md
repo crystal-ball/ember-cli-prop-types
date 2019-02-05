@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0 Polyhedron
+
+- 🐹 Compatibility with ember-cli 3.x + ember-source 3.x
+
 ## 1.5.0 Freerider
 
 - 🔨 Improve inline replacement of global variables for addon options and
