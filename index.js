@@ -3,14 +3,6 @@ const path = require('path');
 const Funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 
-const emberCLIBabelOptions = {
-  includePolyfill: true
-};
-
-const options = {
-  'ember-cli-babel': emberCLIBabelOptions
-};
-
 module.exports = {
   name: 'ember-cli-prop-types',
 
@@ -21,11 +13,6 @@ module.exports = {
     compress: true,
     getDefaultProps: true
   },
-
-  /**
-   * Options for addon's build
-   */
-  options,
 
   /**
    * Import prop-types package from /vendor (See treeForVendor for package Funnel

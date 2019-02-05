@@ -12,6 +12,10 @@ module.exports = function(defaults) {
 
     eslint: {
       testGenerator: 'qunit'
+    },
+
+    'ember-cli-babel': {
+      includePolyfill: true
     }
   });
 
