@@ -28,27 +28,6 @@ module.exports = {
   options,
 
   /**
-   * Attach babel config options before the addon tree is transpiled. Use
-   * babel plugin to replace inline variables to determine whether or not to
-   * check prop types in development/production and support the getDefaultProps
-   * function.
-   * @param {String} type Type of tree
-   * @param {Tree} tree Tree to process
-   * @return {Tree} Processed tree
-   */
-  preprocessTree(type, tree) {
-    this.options.babel = {
-      plugins: [
-        ['inline-replace-variables', {
-          "NODE_ENV": this.env,
-          "INCLUDE_GET_DEFAULT_PROPS": this.addonOptions.getDefaultProps
-        }]
-      ]
-    };
-
-    return tree;
-  },
-  /**
    * Import prop-types package from /vendor (See treeForVendor for package Funnel
    * details). Configure UglifyJS for prod builds.
    * @method included
@@ -59,6 +38,21 @@ module.exports = {
     this._super.included.apply(this, arguments);
     const vendor = this.treePaths.vendor;
     this.env = process.env.EMBER_ENV || 'development';
+
+    /**
+     * Attach babel config options before the addon tree is transpiled.
+     * Use babel plugin to replace inline variables to determine whether or not to
+     * check prop types in development/production and support the getDefaultProps
+     * function.
+    */
+    this.options.babel = {
+      plugins: [
+        ['inline-replace-variables', {
+          "NODE_ENV": this.env,
+          "INCLUDE_GET_DEFAULT_PROPS": this.addonOptions.getDefaultProps
+        }]
+      ]
+    };
 
     // Find the parent app by crawling addon tree
     while (typeof app.import !== 'function' && app.app) {
