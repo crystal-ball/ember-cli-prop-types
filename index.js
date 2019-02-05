@@ -3,6 +3,14 @@ const path = require('path');
 const Funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 
+const emberCLIBabelOptions = {
+  includePolyfill: true
+};
+
+const options = {
+  'ember-cli-babel': emberCLIBabelOptions
+};
+
 module.exports = {
   name: 'ember-cli-prop-types',
 
@@ -13,6 +21,12 @@ module.exports = {
     compress: true,
     getDefaultProps: true
   },
+
+  /**
+   * Options for addon's build
+   */
+  options,
+
   /**
    * Attach babel config options before the addon tree is transpiled. Use
    * babel plugin to replace inline variables to determine whether or not to
