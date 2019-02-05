@@ -8,6 +8,10 @@ module.exports = function(defaults) {
     emberCliPropTypes: {
       // compress: false,
       // getDefaultProps: false
+    },
+
+    eslint: {
+      testGenerator: 'qunit'
     }
   });
 
