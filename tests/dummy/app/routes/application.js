@@ -1,6 +1,6 @@
+import DS from 'ember-data';
 import Ember from 'ember';
 import Extended from '../models/extended';
-import DS from 'ember-data';
 
 const { PromiseArray } = DS;
 const { Route } = Ember;
@@ -15,7 +15,8 @@ export default Route.extend({
     return {
       object: Extended.create({foo: 'bar', isEmberObject: 'yup'}),
       array: Ember.A([1, 2, 3]),
-      promiseArray: promiseArray
+      promiseArray: promiseArray,
+      someNumber: 5
      };
   }
 });
