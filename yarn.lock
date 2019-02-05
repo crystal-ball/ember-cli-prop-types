@@ -3288,7 +3288,7 @@ ember-load-initializers@^2.0.0:
   dependencies:
     ember-cli-babel "^7.0.0"
 
-ember-qunit@^4.0.0:
+ember-qunit@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/ember-qunit/-/ember-qunit-4.2.0.tgz#376bf2eb6340f492e9cf9b5cb55b7dd74e8de600"
   integrity sha512-bsyc8vx8MFkfExsD4i3aLuffns8Yb/qtfA2C+Ghwy/6HYPujcxR/PcZ1j9ZzbCIvO8Fr2oxykZU3rWbVHE6EhA==
